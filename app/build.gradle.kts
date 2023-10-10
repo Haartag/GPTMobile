@@ -3,6 +3,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("kotlin-kapt")
     id("dagger.hilt.android.plugin")
+    id("app.cash.sqldelight") version "2.0.0"
 }
 
 android {
@@ -70,7 +71,11 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 
     //Coroutines
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.0")
+
+    //KTOR
+    implementation("io.ktor:ktor-client-android:2.3.4")
 
     //Navigation
     implementation("androidx.hilt:hilt-navigation-compose:1.1.0-alpha01")
@@ -85,9 +90,16 @@ dependencies {
     //Encrypted Shared preference
     implementation("androidx.security:security-crypto-ktx:1.1.0-alpha06")
 
+    // SqlDelight
+    implementation("app.cash.sqldelight:android-driver:2.0.0")
+    implementation("app.cash.sqldelight:coroutines-extensions:2.0.0")
+}
 
-
-
-
-
+// Sql Delight setup:
+sqldelight {
+    databases {
+        create("PromptDatabase") {
+            packageName.set("com.llinsoft.gptmobile")
+        }
+    }
 }

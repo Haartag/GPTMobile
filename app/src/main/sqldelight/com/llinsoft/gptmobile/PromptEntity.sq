@@ -1,0 +1,18 @@
+CREATE TABLE promptEntity (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    type TEXT NOT NULL,
+    prompt TEXT NOT NULL
+);
+
+getAllPrompts:
+SELECT *
+FROM promptEntity;
+
+insertPrompt:
+INSERT OR REPLACE
+INTO promptEntity
+VALUES (?, ?, ?);
+
+deletePromptById:
+DELETE FROM promptEntity
+WHERE id = :id;
