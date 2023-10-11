@@ -1,5 +1,5 @@
 package com.llinsoft.gptmobile.data.local.datastore
 
-object PreferencesDataStoreConstants {
+object EncryptedPreferencesConstants {
     val TOKEN_KEY = "OpenAI_Token"
 }
