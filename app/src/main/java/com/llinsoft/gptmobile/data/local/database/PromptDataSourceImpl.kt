@@ -25,9 +25,15 @@ class PromptDataSourceImpl(
         }
     }
 
-    override suspend fun insertPrompt(id: Long?, firstName: String, lastName: String) {
+    override suspend fun insertPrompt(id: Long?, type: String, prompt: String) {
         return withContext(dispatcher) {
-            queries.insertPrompt(id, firstName, lastName)
+            queries.insertPrompt(id, type, prompt)
+        }
+    }
+
+    override suspend fun isDatabaseEmpty(): Boolean {
+        return withContext(dispatcher) {
+            queries.countPrompts().executeAsOneOrNull() == 0L
         }
     }
 

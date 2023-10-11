@@ -9,6 +9,8 @@ interface PromptDataSource {
 
     suspend fun deletePromptById(id: Long)
 
-    suspend fun insertPrompt(id: Long? = null, firstName: String, lastName: String)
+    suspend fun insertPrompt(id: Long? = null, type: String, prompt: String)
+
+    suspend fun isDatabaseEmpty(): Boolean
 
 }

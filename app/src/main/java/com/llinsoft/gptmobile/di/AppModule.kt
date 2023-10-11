@@ -6,6 +6,7 @@ import app.cash.sqldelight.driver.android.AndroidSqliteDriver
 import com.llinsoft.gptmobile.PromptDatabase
 import com.llinsoft.gptmobile.data.local.database.PromptDataSource
 import com.llinsoft.gptmobile.data.local.database.PromptDataSourceImpl
+import com.llinsoft.gptmobile.domain.PrepopulateDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -32,4 +33,9 @@ object AppModule {
         return PromptDataSourceImpl(PromptDatabase(driver))
     }
 
+    @Provides
+    @Singleton
+    fun providePrepopulateDatabase(database: PromptDataSource): PrepopulateDatabase {
+        return PrepopulateDatabase(database)
+    }
 }

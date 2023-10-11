@@ -16,3 +16,7 @@ VALUES (?, ?, ?);
 deletePromptById:
 DELETE FROM promptEntity
 WHERE id = :id;
+
+countPrompts:
+SELECT COUNT(*)
+FROM promptEntity;
