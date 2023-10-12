@@ -90,6 +90,9 @@ dependencies {
     //Encrypted Shared preference
     implementation("androidx.security:security-crypto-ktx:1.1.0-alpha06")
 
+    //Preferences DataStore
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
+
     // SqlDelight
     implementation("app.cash.sqldelight:android-driver:2.0.0")
     implementation("app.cash.sqldelight:coroutines-extensions:2.0.0")
