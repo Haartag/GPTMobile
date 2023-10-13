@@ -36,6 +36,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.llinsoft.gptmobile.R
 import kotlinx.coroutines.launch
 
@@ -43,6 +44,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun SettingsScreen(
     viewModel: SettingsViewModel = hiltViewModel(),
+    navController: NavController
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
@@ -54,7 +56,7 @@ fun SettingsScreen(
                     Text(text = "Settings")
                 },
                 navigationIcon = {
-                    IconButton(onClick = { /*TODO*/ }) {
+                    IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
                             contentDescription = "Go back"

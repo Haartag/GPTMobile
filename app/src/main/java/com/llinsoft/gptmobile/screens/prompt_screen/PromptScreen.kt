@@ -52,6 +52,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import com.llinsoft.gptmobile.Screen
 import com.llinsoft.gptmobile.model.PromptItem
 import com.llinsoft.gptmobile.model.PromptType
 import kotlinx.coroutines.launch
@@ -59,7 +61,8 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PromptScreen(
-    viewModel: PromptViewModel = hiltViewModel()
+    viewModel: PromptViewModel = hiltViewModel(),
+    navController: NavController
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
@@ -85,7 +88,7 @@ fun PromptScreen(
                         )
                     }
                     IconButton(onClick = {
-                        //TODO settings navigation
+                        navController.navigate(Screen.SettingsScreen.route)
                     }) {
                         Icon(
                             imageVector = Icons.Default.Settings,
