@@ -7,6 +7,7 @@ import app.cash.sqldelight.driver.android.AndroidSqliteDriver
 import com.llinsoft.gptmobile.PromptDatabase
 import com.llinsoft.gptmobile.data.local.database.PromptDataSource
 import com.llinsoft.gptmobile.data.local.database.PromptDataSourceImpl
+import com.llinsoft.gptmobile.data.local.datastore.EncryptedPreferencesHelper
 import com.llinsoft.gptmobile.data.local.datastore.PreferencesDataStoreHelper
 import com.llinsoft.gptmobile.domain.PrepopulateDatabase
 import dagger.Module
@@ -48,4 +49,9 @@ object AppModule {
         return PreferencesDataStoreHelper(appContext)
     }
 
+    @Provides
+    @Singleton
+    fun provideEncryptedPreferencesHelper(@ApplicationContext appContext: Context): EncryptedPreferencesHelper {
+        return EncryptedPreferencesHelper(appContext)
+    }
 }
