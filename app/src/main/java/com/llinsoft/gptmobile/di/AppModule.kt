@@ -9,6 +9,7 @@ import com.llinsoft.gptmobile.data.local.database.PromptDataSource
 import com.llinsoft.gptmobile.data.local.database.PromptDataSourceImpl
 import com.llinsoft.gptmobile.data.local.datastore.EncryptedPreferencesHelper
 import com.llinsoft.gptmobile.data.local.datastore.PreferencesDataStoreHelper
+import com.llinsoft.gptmobile.domain.ErrorToTextConverter
 import com.llinsoft.gptmobile.domain.OpenAiManager
 import com.llinsoft.gptmobile.domain.PrepopulateDatabase
 import dagger.Module
@@ -62,4 +63,9 @@ object AppModule {
         return OpenAiManager(encryptedPreferencesHelper)
     }
 
+    @Provides
+    @Singleton
+    fun provideErrorToTextConverter(): ErrorToTextConverter {
+        return ErrorToTextConverter()
+    }
 }
