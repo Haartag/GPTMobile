@@ -85,7 +85,7 @@ dependencies {
     kapt("com.google.dagger:hilt-android-compiler:2.48")
 
     //OpenAI
-    implementation("com.aallam.openai:openai-client:3.3.0")
+    implementation("com.aallam.openai:openai-client:3.5.1")
 
     //Encrypted Shared preference
     implementation("androidx.security:security-crypto-ktx:1.1.0-alpha06")
