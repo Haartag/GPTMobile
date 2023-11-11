@@ -31,6 +31,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,12 +39,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.llinsoft.gptmobile.model.SenderType
+import kotlinx.coroutines.delay
 import java.util.Locale
 
 // enable or disable chat when message sent??? what to do if user make 2 messages???
@@ -117,6 +120,11 @@ fun ChatScreen(
                         tileWidth = tileWidth,
                         inError = chatItem.inError
                     )
+                }
+                if (uiState.chatHistory.last().senderType == SenderType.USER) {
+                    items(1) {
+                        ChatTyping()
+                    }
                 }
             }
             ChatTextField(
@@ -222,5 +230,32 @@ fun ChatTile(
                 )
             }
         }
+    }
+}
+
+@Composable
+fun ChatTyping() {
+    val textState = remember { mutableStateOf("Chat typing") }
+    val typingStates = listOf(".", "..", "...")
+
+    LaunchedEffect(key1 = true) {
+        while (true) {
+            typingStates.forEach { state ->
+                textState.value = "Chat typing$state"
+                delay(500) // Delay of 500ms
+            }
+        }
+    }
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
+        Text(
+            text = textState.value,
+            fontStyle = FontStyle.Italic,
+            style = MaterialTheme.typography.bodySmall,
+            modifier = Modifier
+                .padding(8.dp)
+        )
     }
 }
