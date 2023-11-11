@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -51,7 +52,6 @@ import java.util.Locale
 
 // enable or disable chat when message sent??? what to do if user make 2 messages???
 // error handling - chat or snackbar ???
-// make loading card with sort of shimmer???
 // Tertiary color for black theme - too light??? is tertiary color - secondary in another mode?
 // remove top colored line (maybe only in dark mode)???
 
@@ -102,6 +102,10 @@ fun ChatScreen(
                     )
             }
         }
+        val columnScrollState = rememberLazyListState()
+        LaunchedEffect(uiState.chatHistory) {
+            columnScrollState.animateScrollToItem(index = uiState.chatHistory.lastIndex)
+        }
 
         Column(
             modifier = Modifier
@@ -109,6 +113,7 @@ fun ChatScreen(
                 .padding(values)
         ) {
             LazyColumn(
+                state = columnScrollState,
                 modifier = Modifier
                     .fillMaxSize()
                     .weight(1f)
