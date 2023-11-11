@@ -1,6 +1,11 @@
 package com.llinsoft.gptmobile.domain
 
+import com.aallam.openai.api.chat.ChatCompletion
+import com.aallam.openai.api.chat.ChatCompletionRequest
+import com.aallam.openai.api.chat.ChatMessage
+import com.aallam.openai.api.chat.ChatRole
 import com.aallam.openai.api.http.Timeout
+import com.aallam.openai.api.model.ModelId
 import com.aallam.openai.client.OpenAI
 import com.aallam.openai.client.OpenAIConfig
 import com.llinsoft.gptmobile.data.local.datastore.EncryptedPreferencesConstants.TOKEN_KEY
@@ -14,13 +19,14 @@ class OpenAiManager @Inject constructor(
 ) {
 
     private var apiKey: String = encryptedPreferencesHelper.getPreference(TOKEN_KEY, "")
+    private val model = ModelId("gpt-3.5-turbo")
 
     //done via Get() so that the api key can be changed after initialization.
     private val config
         get() = OpenAIConfig(
-        token = apiKey,
-        timeout = Timeout(socket = 60.seconds),
-    )
+            token = apiKey,
+            timeout = Timeout(socket = 120.seconds),
+        )
 
     private val openAI
         get() = OpenAI(config)
@@ -36,5 +42,32 @@ class OpenAiManager @Inject constructor(
             return Resource.Error(e)
         }
         return Resource.Success(true)
+    }
+
+    /**
+     * Request chat completion
+     */
+    suspend fun askForText(
+        system: String,
+        request: String
+    ): Resource<ChatCompletion> {
+        val chatCompletionRequest = ChatCompletionRequest(
+            model = model,
+            messages = listOf(
+                ChatMessage(
+                    role = ChatRole.System,
+                    content = system
+                ),
+                ChatMessage(
+                    role = ChatRole.User,
+                    content = request
+                )
+            )
+        )
+        return try {
+            Resource.Success(openAI.chatCompletion(chatCompletionRequest))
+        } catch (e: Exception) {
+            Resource.Error(e)
+        }
     }
 }
