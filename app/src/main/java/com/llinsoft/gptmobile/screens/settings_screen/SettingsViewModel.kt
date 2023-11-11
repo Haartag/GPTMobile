@@ -71,7 +71,7 @@ class SettingsViewModel @Inject constructor(
             }
             is Resource.Error -> {
                 errorTokenCheck()
-                onCheck(errorToTextConverter.convertTokenException(result.exception))
+                onCheck(errorToTextConverter.convertChatException(result.exception))
             }
         }
     }

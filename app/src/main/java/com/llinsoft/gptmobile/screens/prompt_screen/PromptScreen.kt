@@ -127,6 +127,9 @@ fun PromptScreen(
                     items(uiState.filteredPromptCards) { promptItem ->
                         PromptTile(
                             promptItem = promptItem,
+                            onCardClick = {
+                                navController.navigate("${Screen.ChatScreen.route}/${promptItem.prompt}/${promptItem.type}")
+                            },
                             onDeleteClick = {
                                 viewModel.deletePromptFromDb(it)
                                 scope.launch {
@@ -140,6 +143,7 @@ fun PromptScreen(
                                         SnackbarResult.ActionPerformed -> {
                                             viewModel.restoreDeletedPromptItem()
                                         }
+
                                         SnackbarResult.Dismissed -> {
                                             viewModel.cleanTemp()
                                         }
@@ -192,6 +196,7 @@ private fun SortBar(
 @Composable
 private fun PromptTile(
     promptItem: PromptItem,
+    onCardClick: () -> Unit,
     onDeleteClick: (PromptItem) -> Unit
 ) {
     Card(
@@ -199,7 +204,7 @@ private fun PromptTile(
             .height(144.dp)
             .fillMaxWidth()
             .clickable {
-                //TODO Chat navigation
+                onCardClick()
             },
     ) {
         Column(
