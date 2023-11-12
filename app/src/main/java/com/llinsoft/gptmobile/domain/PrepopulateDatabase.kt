@@ -18,7 +18,7 @@ class PrepopulateDatabase @Inject constructor(
     fun execute() {
         DefaultPrompts.defaults.forEach { prompt ->
             coroutineScope.launch {
-                database.insertPrompt(prompt.id, prompt.type, prompt.prompt)
+                database.insertPrompt(prompt.id, prompt.type, prompt.prompt, prompt.model)
             }
         }
     }

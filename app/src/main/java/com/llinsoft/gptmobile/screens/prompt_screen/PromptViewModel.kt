@@ -6,6 +6,7 @@ import com.llinsoft.gptmobile.data.local.database.PromptDataSource
 import com.llinsoft.gptmobile.data.local.datastore.PreferencesDataStoreConstants.FIRST_LAUNCH_KEY
 import com.llinsoft.gptmobile.data.local.datastore.PreferencesDataStoreHelper
 import com.llinsoft.gptmobile.domain.PrepopulateDatabase
+import com.llinsoft.gptmobile.model.ApiModel
 import com.llinsoft.gptmobile.model.PromptItem
 import com.llinsoft.gptmobile.model.PromptType
 import com.llinsoft.gptmobile.model.toPromptItem
@@ -64,10 +65,18 @@ class PromptViewModel @Inject constructor(
         }
     }
 
-    fun openDropdownMenu() {
+    fun openPromptDropdownMenu() {
         _dialogUiState.update {
             it.copy(
-                isDialogDropdownExpanded = true
+                isDialogPromptDropdownExpanded = true
+            )
+        }
+    }
+
+    fun openModelDropdownMenu() {
+        _dialogUiState.update {
+            it.copy(
+                isDialogModelDropdownExpanded = true
             )
         }
     }
@@ -75,15 +84,25 @@ class PromptViewModel @Inject constructor(
     private fun closeDropdownMenu() {
         _dialogUiState.update {
             it.copy(
-                isDialogDropdownExpanded = false
+                isDialogPromptDropdownExpanded = false,
+                isDialogModelDropdownExpanded = false
             )
         }
     }
 
-    fun dropdownItemSelect(promptType: PromptType) {
+    fun promptDropdownItemSelect(promptType: PromptType) {
         _dialogUiState.update {
             it.copy(
                 dialogPromptTypeSelected = promptType
+            )
+        }
+        closeDropdownMenu()
+    }
+
+    fun modelDropdownItemSelect(model: ApiModel) {
+        _dialogUiState.update {
+            it.copy(
+                dialogModelSelected = model
             )
         }
         closeDropdownMenu()
@@ -117,7 +136,8 @@ class PromptViewModel @Inject constructor(
                 database.insertPrompt(
                     it.id,
                     it.type.name,
-                    it.prompt
+                    it.prompt,
+                    it.model.model
                 )
             }
             cleanTemp()
@@ -144,7 +164,8 @@ class PromptViewModel @Inject constructor(
             database.insertPrompt(
                 null,
                 dialogUiState.value.dialogPromptTypeSelected.name,
-                dialogUiState.value.promptText
+                dialogUiState.value.promptText,
+                dialogUiState.value.dialogModelSelected.model
             )
         }
         closeDialog()

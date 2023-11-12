@@ -1,13 +1,15 @@
 package com.llinsoft.gptmobile.screens.chat_screen
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.aallam.openai.api.BetaOpenAI
+import com.llinsoft.gptmobile.data.local.database.PromptDataSource
 import com.llinsoft.gptmobile.domain.ErrorToTextConverter
 import com.llinsoft.gptmobile.domain.OpenAiManager
 import com.llinsoft.gptmobile.model.ChatItem
 import com.llinsoft.gptmobile.model.SenderType
+import com.llinsoft.gptmobile.model.toPromptItem
 import com.llinsoft.gptmobile.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,6 +21,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ChatViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
+    private val database: PromptDataSource,
     private val openAiManager: OpenAiManager,
     private val errorToTextConverter: ErrorToTextConverter,
 ) : ViewModel() {
@@ -26,53 +29,31 @@ class ChatViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<ChatUiState>(ChatUiState())
     val uiState = _uiState.asStateFlow()
 
-    private lateinit var prompt: String
-
-    /**
-     * Get prompt type from navigation
-     */
-    private fun setPromptType() {
-        try {
-            val promptType: String = checkNotNull(savedStateHandle["promptType"])
-            _uiState.update { uiState ->
-                uiState.copy(
-                    promptType = promptType.lowercase().replaceFirstChar { it.titlecaseChar() }
-                )
-            }
-        } catch (e: IllegalStateException) { // Navigation error
-            _uiState.update { uiState ->
-                uiState.copy(
-                    errorText = "Unknown Error: Something went wrong..."
-                )
-            }
-        }
-    }
-
-    /**
-     * Get prompt from navigation
-     */
     private fun setPrompt() {
-        try {
-            prompt = checkNotNull(savedStateHandle["prompt"])
-        } catch (e: IllegalStateException) { // Navigation error
-            _uiState.update { uiState ->
-                uiState.copy(
-                    errorText = "Unknown Error: Something went wrong..."
-                )
+        viewModelScope.launch {
+            try {
+                val promptId: Long = checkNotNull(savedStateHandle["promptId"])
+                val prompt = database.getPromptById(promptId)
+                _uiState.update { uiState ->
+                    uiState.copy(
+                        prompt = prompt.toPromptItem(),
+                        chatHistory = uiState.chatHistory + ChatItem(
+                            text = prompt.prompt,
+                            senderType = SenderType.SYSTEM
+                        )
+                    )
+                }
+            } catch (e: Exception) {
+                _uiState.update { uiState ->
+                    uiState.copy(
+                        errorText = "Unknown Error: Something went wrong..."
+                    )
+                }
             }
-        }
-        _uiState.update {
-            it.copy(
-                chatHistory = it.chatHistory + ChatItem(
-                    text = prompt,
-                    senderType = SenderType.SYSTEM
-                )
-            )
         }
     }
 
     init {
-        setPromptType()
         setPrompt()
     }
 
@@ -136,13 +117,16 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    @OptIn(BetaOpenAI::class)
     private fun getChatAnswer(
         onSuccess: (String) -> Unit,
-        onError: (String) -> Unit
+        onError: (String) -> Unit,
     ) {
         viewModelScope.launch {
-            val response = openAiManager.askForText(prompt, _uiState.value.chatHistory.last().text)
+            val response = openAiManager.askForText(
+                system = _uiState.value.chatHistory.first().text,
+                request = _uiState.value.chatHistory.last().text,
+                model = _uiState.value.prompt.model
+            )
 
             when (response) {
                 is Resource.Success -> {
@@ -151,13 +135,11 @@ class ChatViewModel @Inject constructor(
                         onSuccess(it)
                     }
                 }
-
                 is Resource.Error -> {
+                    Log.d("ChatTag", "getChatAnswer: ", response.exception)
                     onError(errorToTextConverter.convertChatException(response.exception))
                 }
             }
-
-
         }
     }
 }

@@ -10,6 +10,7 @@ import com.aallam.openai.client.OpenAI
 import com.aallam.openai.client.OpenAIConfig
 import com.llinsoft.gptmobile.data.local.datastore.EncryptedPreferencesConstants.TOKEN_KEY
 import com.llinsoft.gptmobile.data.local.datastore.EncryptedPreferencesHelper
+import com.llinsoft.gptmobile.model.ApiModel
 import com.llinsoft.gptmobile.utils.Resource
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
@@ -19,7 +20,7 @@ class OpenAiManager @Inject constructor(
 ) {
 
     private var apiKey: String = encryptedPreferencesHelper.getPreference(TOKEN_KEY, "")
-    private val model = ModelId("gpt-3.5-turbo")
+    private var model = ModelId("gpt-3.5-turbo")
 
     //done via Get() so that the api key can be changed after initialization.
     private val config
@@ -49,10 +50,11 @@ class OpenAiManager @Inject constructor(
      */
     suspend fun askForText(
         system: String,
-        request: String
+        request: String,
+        model: ApiModel
     ): Resource<ChatCompletion> {
         val chatCompletionRequest = ChatCompletionRequest(
-            model = model,
+            model = ModelId(model.model),
             messages = listOf(
                 ChatMessage(
                     role = ChatRole.System,

@@ -46,6 +46,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -54,6 +55,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.llinsoft.gptmobile.Screen
+import com.llinsoft.gptmobile.model.ApiModel
 import com.llinsoft.gptmobile.model.PromptItem
 import com.llinsoft.gptmobile.model.PromptType
 import kotlinx.coroutines.launch
@@ -62,7 +64,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun PromptScreen(
     viewModel: PromptViewModel = hiltViewModel(),
-    navController: NavController
+    navController: NavController,
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
@@ -128,7 +130,7 @@ fun PromptScreen(
                         PromptTile(
                             promptItem = promptItem,
                             onCardClick = {
-                                navController.navigate("${Screen.ChatScreen.route}/${promptItem.prompt}/${promptItem.type}")
+                                navController.navigate("${Screen.ChatScreen.route}/${promptItem.id}")
                             },
                             onDeleteClick = {
                                 viewModel.deletePromptFromDb(it)
@@ -197,7 +199,7 @@ private fun SortBar(
 private fun PromptTile(
     promptItem: PromptItem,
     onCardClick: () -> Unit,
-    onDeleteClick: (PromptItem) -> Unit
+    onDeleteClick: (PromptItem) -> Unit,
 ) {
     Card(
         modifier = Modifier
@@ -218,10 +220,17 @@ private fun PromptTile(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    painter = painterResource(id = promptItem.type.icon),
-                    contentDescription = promptItem.type.name
-                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        painter = painterResource(id = promptItem.type.icon),
+                        contentDescription = promptItem.type.name
+                    )
+                    Spacer(modifier = Modifier.width(16.dp))
+                    Text(
+                        text = promptItem.model.label,
+                        fontStyle = FontStyle.Italic
+                    )
+                }
                 Icon(
                     imageVector = Icons.Default.Close,
                     contentDescription = "Delete prompt",
@@ -245,7 +254,7 @@ private fun PromptTile(
 @Composable
 private fun NewPromptDialog(
     viewModel: PromptViewModel,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
 ) {
     val dialogUiState by viewModel.dialogUiState.collectAsState()
     Dialog(
@@ -267,27 +276,53 @@ private fun NewPromptDialog(
                     modifier = Modifier.padding(4.dp)
                 )
                 Spacer(modifier = Modifier.height(16.dp))
-                Box {
-                    DropdownRow(
-                        promptType = dialogUiState.dialogPromptTypeSelected,
-                        modifier = Modifier.clickable { viewModel.openDropdownMenu() },
-                        isSelected = true
-                    )
-                    DropdownMenu(
-                        expanded = dialogUiState.isDialogDropdownExpanded,
-                        onDismissRequest = { Unit }
-                    ) {
-                        dialogUiState.promptTypes.forEach { promptType ->
-                            DropdownMenuItem(
-                                text = {
-                                    DropdownRow(promptType = promptType)
-                                },
-                                onClick = {
-                                    viewModel.dropdownItemSelect(promptType)
-                                }
-                            )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    Box {
+                        PromptDropdownRow(
+                            promptType = dialogUiState.dialogPromptTypeSelected,
+                            modifier = Modifier.clickable { viewModel.openPromptDropdownMenu() },
+                            isSelected = true
+                        )
+                        DropdownMenu(
+                            expanded = dialogUiState.isDialogPromptDropdownExpanded,
+                            onDismissRequest = { Unit }
+                        ) {
+                            dialogUiState.promptTypes.forEach { promptType ->
+                                DropdownMenuItem(
+                                    text = {
+                                        PromptDropdownRow(promptType = promptType)
+                                    },
+                                    onClick = {
+                                        viewModel.promptDropdownItemSelect(promptType)
+                                    }
+                                )
+                            }
                         }
-
+                    }
+                    Box {
+                        ModelDropdownRow(
+                            model = dialogUiState.dialogModelSelected,
+                            modifier = Modifier.clickable { viewModel.openModelDropdownMenu() },
+                            isSelected = true
+                        )
+                        DropdownMenu(
+                            expanded = dialogUiState.isDialogModelDropdownExpanded,
+                            onDismissRequest = { Unit }
+                        ) {
+                            dialogUiState.models.forEach { model ->
+                                DropdownMenuItem(
+                                    text = {
+                                        ModelDropdownRow(model = model)
+                                    },
+                                    onClick = {
+                                        viewModel.modelDropdownItemSelect(model)
+                                    }
+                                )
+                            }
+                        }
                     }
                 }
                 Spacer(modifier = Modifier.height(16.dp))
@@ -334,7 +369,7 @@ private fun NewPromptDialog(
 }
 
 @Composable
-private fun DropdownRow(
+private fun PromptDropdownRow(
     promptType: PromptType,
     modifier: Modifier = Modifier,
     isSelected: Boolean = false,
@@ -353,7 +388,28 @@ private fun DropdownRow(
             Spacer(modifier = Modifier.width(4.dp))
             Icon(
                 imageVector = Icons.Default.ArrowDropDown,
-                contentDescription = promptType.name
+                contentDescription = "dropdown"
+            )
+        }
+    }
+}
+
+@Composable
+private fun ModelDropdownRow(
+    model: ApiModel,
+    modifier: Modifier = Modifier,
+    isSelected: Boolean = false,
+) {
+    Row(
+        modifier = modifier.padding(4.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(text = model.label)
+        if (isSelected) {
+            Spacer(modifier = Modifier.width(4.dp))
+            Icon(
+                imageVector = Icons.Default.ArrowDropDown,
+                contentDescription = "dropdown"
             )
         }
     }

@@ -7,9 +7,11 @@ interface PromptDataSource {
 
     fun getAllPrompts(): Flow<List<PromptEntity>>
 
+    suspend fun getPromptById(id: Long): PromptEntity
+
     suspend fun deletePromptById(id: Long)
 
-    suspend fun insertPrompt(id: Long? = null, type: String, prompt: String)
+    suspend fun insertPrompt(id: Long? = null, type: String, prompt: String, model: String)
 
     suspend fun isDatabaseEmpty(): Boolean
 

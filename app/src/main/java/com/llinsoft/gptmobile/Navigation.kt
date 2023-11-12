@@ -30,24 +30,17 @@ fun Navigation() {
         composable(Screen.SettingsScreen.route) {
             SettingsScreen(navController = navController)
         }
-        composable("${Screen.ChatScreen.route}/{prompt}/{promptType}", arguments = listOf(
-            navArgument("prompt") {
-                type = NavType.StringType
-            },
-            navArgument("promptType") {
-                type = NavType.StringType
+        composable("${Screen.ChatScreen.route}/{promptId}", arguments = listOf(
+            navArgument("promptId") {
+                type = NavType.LongType
             }
         )) {
-            val prompt = remember {
-                it.arguments?.getString("prompt")
-            }
-            val promptType = remember {
-                it.arguments?.getString("promptType")
+            val promptId = remember {
+                it.arguments?.getLong("promptId")
             }
             ChatScreen(
                 navController = navController,
-                prompt = prompt ?: "",
-                promptType = promptType ?: "",
+                promptId = promptId ?: 0L,
             )
         }
     }

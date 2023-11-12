@@ -1,6 +1,7 @@
 package com.llinsoft.gptmobile.utils
 
 import com.llinsoft.gptmobile.PromptEntity
+import com.llinsoft.gptmobile.model.ApiModel
 import com.llinsoft.gptmobile.model.PromptType
 
 object DefaultPrompts {
@@ -14,20 +15,23 @@ object DefaultPrompts {
                     "translate it and answer in the corrected and improved version of my text, " +
                     "in English. Keep the meaning same, but make them more literary. " +
                     "I want you to only reply the correction, the improvements and nothing else, " +
-                    "do not write explanations."
+                    "do not write explanations.",
+            ApiModel.GPT35.model
         ),
         PromptEntity(
             2L,
             PromptType.CODE.name,
             "Act as a coding tutor. I'll give you a topic and language, and you make a study " +
-                    "plan to help me master it, with links to tutorials and video resources."
+                    "plan to help me master it, with links to tutorials and video resources.",
+            ApiModel.GPT35.model
         ),
         PromptEntity(
             3L,
             PromptType.LETTER.name,
             "Act as a email writer. I will give you a letter and a short statement for " +
                     "response, and you write me a short (5-7 sentences) response. Make it is more " +
-                    "business-oriented and appropriate to put in the email."
+                    "business-oriented and appropriate to put in the email.",
+            ApiModel.GPT35.model
         ),
         PromptEntity(
             4L,
@@ -35,7 +39,8 @@ object DefaultPrompts {
             "Act as an English teacher. We're going to talk casual. You will check my answers " +
                     "for correct use of English and if it is sub-optimal, you will write a " +
                     "corrected version as Revised: {revised sentence}. Then you will keep " +
-                    "the conversation going by asking questions."
+                    "the conversation going by asking questions.",
+            ApiModel.GPT35.model
         ),
     )
 }

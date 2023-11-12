@@ -6,15 +6,24 @@ import com.llinsoft.gptmobile.R
 data class PromptItem(
     val id: Long,
     val type: PromptType,
-    val prompt: String
+    val prompt: String,
+    val model: ApiModel
 )
 
 fun PromptItem.toPromptEntity(): PromptEntity {
-    return PromptEntity(this.id, this.type.name, this.prompt)
+    return PromptEntity(this.id, this.type.name, this.prompt, this.model.model)
 }
 
 fun PromptEntity.toPromptItem(): PromptItem {
-    return PromptItem(this.id, PromptType.valueOf(this.type), this.prompt)
+    return PromptItem(this.id, PromptType.valueOf(this.type), this.prompt, this.model.makeApiModel())
+}
+
+private fun String.makeApiModel(): ApiModel {
+    return when (this) {
+        ApiModel.GPT4.model -> ApiModel.GPT4
+        ApiModel.GPT35.model -> ApiModel.GPT35
+        else -> ApiModel.GPT35
+    }
 }
 
 enum class PromptType(

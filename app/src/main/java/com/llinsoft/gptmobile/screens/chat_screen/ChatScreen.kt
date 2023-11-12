@@ -50,17 +50,10 @@ import com.llinsoft.gptmobile.model.SenderType
 import kotlinx.coroutines.delay
 import java.util.Locale
 
-// enable or disable chat when message sent??? what to do if user make 2 messages???
-// error handling - chat or snackbar ???
-// Tertiary color for black theme - too light??? is tertiary color - secondary in another mode?
-// remove top colored line (maybe only in dark mode)???
-
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChatScreen(
-    prompt: String,
-    promptType: String,
+    promptId: Long,
     viewModel: ChatViewModel = hiltViewModel(),
     navController: NavController
 ) {
@@ -80,7 +73,7 @@ fun ChatScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(text = uiState.promptType)
+                    Text(text = uiState.prompt.type.name)
                 },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {

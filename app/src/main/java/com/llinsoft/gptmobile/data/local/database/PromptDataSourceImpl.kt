@@ -19,15 +19,19 @@ class PromptDataSourceImpl(
         return queries.getAllPrompts().asFlow().mapToList(dispatcher)
     }
 
+    override suspend fun getPromptById(id: Long): PromptEntity {
+        return queries.getPromptById(id).executeAsOne()
+    }
+
     override suspend fun deletePromptById(id: Long) {
         return withContext(dispatcher) {
             queries.deletePromptById(id)
         }
     }
 
-    override suspend fun insertPrompt(id: Long?, type: String, prompt: String) {
+    override suspend fun insertPrompt(id: Long?, type: String, prompt: String, model: String) {
         return withContext(dispatcher) {
-            queries.insertPrompt(id, type, prompt)
+            queries.insertPrompt(id, type, prompt, model)
         }
     }
 
