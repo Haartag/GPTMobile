@@ -1,6 +1,5 @@
 package com.llinsoft.gptmobile.screens.prompt_screen
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,18 +14,13 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Card
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
@@ -47,15 +41,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.llinsoft.gptmobile.Screen
-import com.llinsoft.gptmobile.model.ApiModel
 import com.llinsoft.gptmobile.model.PromptItem
 import com.llinsoft.gptmobile.model.PromptType
 import kotlinx.coroutines.launch
@@ -245,171 +235,6 @@ private fun PromptTile(
                 text = "\"${promptItem.prompt}\"",
                 maxLines = 3,
                 overflow = TextOverflow.Ellipsis
-            )
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun NewPromptDialog(
-    viewModel: PromptViewModel,
-    onDismiss: () -> Unit,
-) {
-    val dialogUiState by viewModel.dialogUiState.collectAsState()
-    Dialog(
-        onDismissRequest = onDismiss
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.background)
-        ) {
-            Column(
-                Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = "New Prompt:",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 20.sp,
-                    modifier = Modifier.padding(4.dp)
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    Box {
-                        PromptDropdownRow(
-                            promptType = dialogUiState.dialogPromptTypeSelected,
-                            modifier = Modifier.clickable { viewModel.openPromptDropdownMenu() },
-                            isSelected = true
-                        )
-                        DropdownMenu(
-                            expanded = dialogUiState.isDialogPromptDropdownExpanded,
-                            onDismissRequest = { Unit }
-                        ) {
-                            dialogUiState.promptTypes.forEach { promptType ->
-                                DropdownMenuItem(
-                                    text = {
-                                        PromptDropdownRow(promptType = promptType)
-                                    },
-                                    onClick = {
-                                        viewModel.promptDropdownItemSelect(promptType)
-                                    }
-                                )
-                            }
-                        }
-                    }
-                    Box {
-                        ModelDropdownRow(
-                            model = dialogUiState.dialogModelSelected,
-                            modifier = Modifier.clickable { viewModel.openModelDropdownMenu() },
-                            isSelected = true
-                        )
-                        DropdownMenu(
-                            expanded = dialogUiState.isDialogModelDropdownExpanded,
-                            onDismissRequest = { Unit }
-                        ) {
-                            dialogUiState.models.forEach { model ->
-                                DropdownMenuItem(
-                                    text = {
-                                        ModelDropdownRow(model = model)
-                                    },
-                                    onClick = {
-                                        viewModel.modelDropdownItemSelect(model)
-                                    }
-                                )
-                            }
-                        }
-                    }
-                }
-                Spacer(modifier = Modifier.height(16.dp))
-                OutlinedTextField(
-                    modifier = Modifier
-                        .padding(8.dp)
-                        .height(136.dp),
-                    value = dialogUiState.promptText,
-                    onValueChange = viewModel::updatePromptText,
-                    label = {
-                        Text(text = "Prompt:")
-                    },
-                    singleLine = false,
-                    maxLines = 4,
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Row(
-                    modifier = Modifier
-                        .padding(8.dp)
-                        .padding(end = 24.dp)
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End
-                ) {
-                    Text(
-                        text = "Cancel",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier
-                            .clickable { viewModel.closeDialog() }
-                    )
-                    Spacer(modifier = Modifier.width(24.dp))
-                    Text(
-                        text = "Add",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier
-                            .clickable { viewModel.saveNewPrompt() }
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun PromptDropdownRow(
-    promptType: PromptType,
-    modifier: Modifier = Modifier,
-    isSelected: Boolean = false,
-) {
-    Row(
-        modifier = modifier.padding(4.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(
-            painter = painterResource(id = promptType.icon),
-            contentDescription = promptType.name
-        )
-        Spacer(modifier = Modifier.width(4.dp))
-        Text(text = promptType.name.lowercase().replaceFirstChar { it.titlecaseChar() })
-        if (isSelected) {
-            Spacer(modifier = Modifier.width(4.dp))
-            Icon(
-                imageVector = Icons.Default.ArrowDropDown,
-                contentDescription = "dropdown"
-            )
-        }
-    }
-}
-
-@Composable
-private fun ModelDropdownRow(
-    model: ApiModel,
-    modifier: Modifier = Modifier,
-    isSelected: Boolean = false,
-) {
-    Row(
-        modifier = modifier.padding(4.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(text = model.label)
-        if (isSelected) {
-            Spacer(modifier = Modifier.width(4.dp))
-            Icon(
-                imageVector = Icons.Default.ArrowDropDown,
-                contentDescription = "dropdown"
             )
         }
     }

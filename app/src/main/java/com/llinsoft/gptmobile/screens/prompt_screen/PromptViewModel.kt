@@ -137,7 +137,8 @@ class PromptViewModel @Inject constructor(
                     it.id,
                     it.type.name,
                     it.prompt,
-                    it.model.model
+                    it.model.model,
+                    it.temperature.toDouble()
                 )
             }
             cleanTemp()
@@ -165,7 +166,8 @@ class PromptViewModel @Inject constructor(
                 null,
                 dialogUiState.value.dialogPromptTypeSelected.name,
                 dialogUiState.value.promptText,
-                dialogUiState.value.dialogModelSelected.model
+                dialogUiState.value.dialogModelSelected.model,
+                dialogUiState.value.temperature.toDouble()
             )
         }
         closeDialog()
@@ -187,6 +189,14 @@ class PromptViewModel @Inject constructor(
                 prepopulateDatabase.execute()
                 preferencesDataStoreHelper.putPreference(FIRST_LAUNCH_KEY, true)
             }
+    }
+
+    fun updateTemperatureSlider(newValue: Float) {
+        _dialogUiState.update { uiState ->
+            uiState.copy(
+                temperature = newValue
+            )
+        }
     }
 
 }

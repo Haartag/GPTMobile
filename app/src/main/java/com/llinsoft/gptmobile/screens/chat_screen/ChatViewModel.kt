@@ -9,6 +9,7 @@ import com.llinsoft.gptmobile.domain.ErrorToTextConverter
 import com.llinsoft.gptmobile.domain.OpenAiManager
 import com.llinsoft.gptmobile.model.ChatItem
 import com.llinsoft.gptmobile.model.SenderType
+import com.llinsoft.gptmobile.model.getChatTemperature
 import com.llinsoft.gptmobile.model.toPromptItem
 import com.llinsoft.gptmobile.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -125,7 +126,8 @@ class ChatViewModel @Inject constructor(
             val response = openAiManager.askForText(
                 system = _uiState.value.chatHistory.first().text,
                 request = _uiState.value.chatHistory.last().text,
-                model = _uiState.value.prompt.model
+                model = _uiState.value.prompt.model,
+                temperature = _uiState.value.prompt.temperature.getChatTemperature()
             )
 
             when (response) {

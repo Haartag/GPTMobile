@@ -29,9 +29,9 @@ class PromptDataSourceImpl(
         }
     }
 
-    override suspend fun insertPrompt(id: Long?, type: String, prompt: String, model: String) {
+    override suspend fun insertPrompt(id: Long?, type: String, prompt: String, model: String, temperature: Double) {
         return withContext(dispatcher) {
-            queries.insertPrompt(id, type, prompt, model)
+            queries.insertPrompt(id, type, prompt, model, temperature)
         }
     }
 

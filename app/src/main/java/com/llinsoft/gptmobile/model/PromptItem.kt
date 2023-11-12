@@ -7,15 +7,28 @@ data class PromptItem(
     val id: Long,
     val type: PromptType,
     val prompt: String,
-    val model: ApiModel
+    val model: ApiModel,
+    val temperature: Float,
 )
 
 fun PromptItem.toPromptEntity(): PromptEntity {
-    return PromptEntity(this.id, this.type.name, this.prompt, this.model.model)
+    return PromptEntity(
+        this.id,
+        this.type.name,
+        this.prompt,
+        this.model.model,
+        this.temperature.toDouble()
+    )
 }
 
 fun PromptEntity.toPromptItem(): PromptItem {
-    return PromptItem(this.id, PromptType.valueOf(this.type), this.prompt, this.model.makeApiModel())
+    return PromptItem(
+        this.id,
+        PromptType.valueOf(this.type),
+        this.prompt,
+        this.model.makeApiModel(),
+        this.temperature.toFloat()
+    )
 }
 
 private fun String.makeApiModel(): ApiModel {
@@ -27,8 +40,8 @@ private fun String.makeApiModel(): ApiModel {
 }
 
 enum class PromptType(
-    val icon: Int
-){
+    val icon: Int,
+) {
     TRANSLATE(
         icon = R.drawable.baseline_translate_24
     ),

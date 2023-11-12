@@ -9,7 +9,8 @@ data class DialogUiState(
     val dialogPrompt: String = "",
     val dialogPromptTypeSelected: PromptType = PromptType.TRANSLATE,
     val dialogModelSelected: ApiModel = ApiModel.GPT35,
-    val promptText: String = ""
+    val promptText: String = "",
+    val temperature: Float = 0.5f
 ) {
     val promptTypes = PromptType.values()
     val models = ApiModel.values()
